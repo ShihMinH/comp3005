@@ -1,0 +1,199 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Scope+One&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: 'Scope One', serif;
+        text-align: center;
+    }
+
+    table {
+        display: grid;
+        justify-content: center;
+    }
+
+    th,
+    td {
+        justify-content: center;
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1> Online Book Store </h1>
+    <h1>Hello {{ account[1] }}!</h1>
+    <p>My Account Info: </p>
+    <div>
+        <p id='account_id' value="{{account[0]}}" style="display: none;"> {{account[0]}}</p>
+        Name: {{account[1]}} <br>
+        Phone: {{account[2]}} <br>
+        Email: {{account[3]}} <br>
+        Banking Account: {{account[4]}} <br>
+        Billing Address: {{account[5]}} <br>
+        Shipping Address: {{account[6]}} <br>
+    </div>
+    <p id='embed'>This should not appear</p>
+
+    <p id='mylog' />
+
+    <p>Search Books: </p>
+    <form role="search" id="search_form">
+        <label for="categories">Search By: </label>
+        <select id="categories" name="categories">
+            <option value="All">All</option>
+            <option value="ISBN">ISBN</option>
+            <option value="Name">Name</option>
+            <option value="Author">Author</option>
+            <option value="Genre">Genre</option>
+            <option value="Publisher">Publisher</option>
+        </select>
+        <input type="search" id="query" name="q" placeholder="Search...">
+        <input type="submit">
+    </form>
+    <table id='books_results' style="visibility: hidden">
+        <thead>
+            <td>ISBN</td>
+            <td>Name</td>
+            <td>Publisher</td>
+            <td>Author</td>
+            <td>Genre</td>
+            <td>Price</td>
+            <td>Page</td>
+        </thead>
+
+    </table>
+
+
+    Add Basket:
+
+    <form action="{{ url_for('basket') }}" method="post">
+        My Account ID: <input name="account_id" value="{{account[0]}}" readonly> <br>
+        Shipping Address: <input type="text" name="shipping_address"><br>
+        <input type="submit">
+    </form>
+    <h4>My Baskets: </h4>
+    <table id='baskets'>
+        <thead>
+            <td>ID</td>
+            <td>Customer Id</td>
+            <td>place date</td>
+            <td>close date</td>
+            <td>shipping Address</td>
+            <td>delivery status</td>
+            <td>total payment</td>
+        </thead>
+    </table>
+
+    Add book to Basket:
+    <form action="{{ url_for('basket_book') }}" method="post">
+        Basket ID: <input type="text" name="basket_id"> <br>
+        Book ISBN: <input type="text" name="isbn"><br>
+        Count: <input type="text" name="count"><br>
+        <input type="submit">
+    </form>
+
+    Place an Order:
+
+    <form action="{{ url_for('order') }}" method="post">
+        Basket ID: <input type="text" name="basket_id"> <br>
+        <input type="submit">
+    </form>
+
+    Track an Order:
+    <form id="track_form">
+        Basket ID: <input type="search" name="basket_id" id="search_track"> <br>
+        <input type="submit">
+    </form>
+
+    <p id='track_result' style="color: red;"></p>
+    <script>
+        // section to log into element instead console
+        var actuallog = console.log
+
+        console.log = (...args) => {
+            args.map(arg => document.querySelector("#mylog").innerHTML += arg + '<br>')
+        }
+
+        var account_id = parseInt(document.getElementById("account_id").innerHTML);
+        // substitution test
+        document.getElementById('embed').innerHTML = "{{embed}}"
+
+        fetch('/basket?account_id=' + account_id)
+            .then(function (response) {
+                return response.json();
+            }).then(function (text) {
+
+                // document.getElementById('baskets').innerHTML += text
+
+                var table = document.getElementById("baskets")
+                for (const basket of text) {
+                    var row = table.insertRow();
+                    for (const ele of basket) {
+                        var cell = row.insertCell();
+                        cell.innerHTML = ele;
+                    }
+                }
+            });
+
+        function myBaskets(account_id) {
+            fetch('/basketaccount_id=' + account_id)
+                .then(function (response) {
+                    return response.json();
+                }).then(function (text) {
+                    console.log(text);
+                });
+
+        }
+
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        const f = document.getElementById('search_form');
+        const q = document.getElementById('query');
+        const category = document.getElementById('categories')
+
+        function submitted(event) {
+            event.preventDefault();
+
+            fetch('/search_books?category=' + category.value + '&value=' + q.value)
+                .then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    appendData(data);
+                })
+        }
+
+        f.addEventListener('submit', submitted);
+
+        function appendData(data) {
+            var table = document.getElementById("books_results");
+            document.getElementById("books_results").style.visibility = "visible";
+            for (var i = 0; i < data.length; i++) {
+                var row = table.insertRow();
+                for (var j = 0; j < data[i].length; j++) {
+                    var cell = row.insertCell();
+                    cell.innerHTML = data[i][j];
+                }
+            }
+        }
+
+        //track an order
+        const q2 = document.getElementById('search_track');
+        const f2 = document.getElementById('track_form');
+        function submitted2(event) {
+            event.preventDefault();
+
+            fetch('/track_order?basket_id=' + q2.value)
+                .then(function (response) {
+                    return response.json();
+                }).then(function (text) {
+
+                    document.getElementById("track_result").innerHTML += text;
+                })
+        }
+
+        f2.addEventListener('submit', submitted2);
+    </script>
+</body>

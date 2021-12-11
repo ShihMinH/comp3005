@@ -1,0 +1,77 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Scope+One&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: 'Scope One', serif;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <h1> Online Book Store </h1>
+    <!-- <h3>Browse Books:</h3>
+    <p id='embed'>This should not appear</p> -->
+
+
+    <p id='mylog' />
+
+    New User Sign Up:
+    <form action="{{ url_for('accountinfo') }}" method="post">
+
+        Name: <input type="text" name="name"> <br>
+        Phone: <input type="text" name="phone"><br>
+        Email: <input type="text" name="email"><br>
+        Billing Address: <input type="text" name="billing_address"><br>
+        Shipping Address: <input type="text" name="shipping_address"><br>
+        Banking Account: <input type="text" name="banking_account"><br>
+        <input type="submit">
+
+    </form>
+    Sign In
+    <form action="{{ url_for('accountinfo') }}" method="get">
+        Enter your email address: <input type="text" name="email">
+        <input type="submit">
+    </form>
+    <script>
+        // section to log into element instead console
+        var actuallog = console.log
+
+        console.log = (...args) => {
+            args.map(arg => document.querySelector("#mylog").innerHTML += arg + '<br>')
+        }
+
+
+        // substitution test
+        document.getElementById('embed').innerHTML = "{{embed}}"
+
+
+        // fetch json
+        fetch('/books')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                appendData(data);
+            })
+
+        function appendData(data) {
+            var mainContainer = document.getElementById("embed");
+            for (var i = 0; i < data.length; i++) {
+                var div = document.createElement("div");
+                div.innerHTML = data[i];
+                mainContainer.appendChild(div);
+            }
+        }
+        function getAccountInfo(email) {
+            fetch('/accountinfo/${email}')
+                .then(function (response) {
+                    return response.json();
+                }).then(function (text) {
+                    console.log(text);
+                    console.log('')
+                });
+
+        }
+    </script>

@@ -1,0 +1,36 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Scope+One&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: 'Scope One', serif;
+        text-align: center;
+    }
+</style>
+
+<body>
+    <h1> Online Book Store </h1>
+
+    <div>
+        <p>Are you user or owner? </p>
+        <a href="{{ url_for('myaccount') }}">User</a>
+        <a href="{{ url_for('owner') }}">Owner</a>
+    </div>
+
+
+
+
+    <script>
+        // section to log into element instead console
+        var actuallog = console.log
+
+        console.log = (...args) => {
+            args.map(arg => document.querySelector("#mylog").innerHTML += arg + '<br>')
+        }
+
+
+        // substitution test
+        document.getElementById('embed').innerHTML = "{{embed}}"
+
+    </script>

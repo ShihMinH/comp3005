@@ -1,0 +1,164 @@
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Scope+One&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    body {
+        font-family: 'Scope One', serif;
+        text-align: center;
+    }
+
+    table {
+        display: grid;
+        justify-content: center;
+    }
+
+    th,
+    td {
+        justify-content: center;
+        border: 1px solid black;
+    }
+</style>
+
+<body>
+    <h1> Online Book Store </h1>
+    <h3>View Books:</h3>
+    <table id='embed'>
+        <thead>
+            <td>ISBN</td>
+            <td>Name</td>
+            <td>Publisher</td>
+            <td>Author</td>
+            <td>Genre</td>
+            <td>Price</td>
+            <td>Page</td>
+            <td>Cost</td>
+            <td>Percentage</td>
+            <td>Count</td>
+        </thead>
+    </table>
+    <p id='mylog' />
+    <span>Add a Book: </span>
+    <form action="{{ url_for('books') }}" method="post">
+        ISBN: <input type="text" name="isbn" /><br>
+        Name: <input type="text" name="name" /><br>
+        Author: <input type="text" name="author" /><br>
+        Author Address: <input type="text" name="author_address" /><br>
+        Publisher: <input type="text" name="publisher" /><br>
+        Publisher Email: <input type="text" name="publisher_email" /><br>
+        Genre: <input type="text" name="genre" /><br>
+        Pages: <input type="text" name="pages" /><br>
+        Prices: <input type="text" name="price" /><br>
+        Cost: <input type="text" name="cost" /><br>
+        Percentage: <input type="text" name="percentage" /><br>
+        Count: <input type="text" name="count" /><br>
+        <input type="submit">
+    </form>
+
+    <span>Remove a Book: </span>
+    <form action="{{ url_for('books') }}" method="delete">
+        ISBN: <input type="text" name="isbn" /><br>
+        <input type="submit">
+    </form>
+
+    <h3>View Authors:</h3>
+    <table id='authors'>
+        <thead>
+            <td>id</td>
+            <td>name</td>
+            <td>address</td>
+        </thead>
+    </table>
+
+
+    <span>Add an Author: </span>
+    <form action="{{ url_for('author') }}" method="post">
+        Name: <input type="text" name="name" /><br>
+        Address: <input type="text" name="address" /><br>
+        <input type="submit">
+    </form>
+
+    <h3>View Publisher:</h3>
+    <table id='publishers'>
+        <thead>
+            <td>id</td>
+            <td>name</td>
+            <td>address</td>
+            <td>phone</td>
+            <td>email</td>
+            <td>bank account</td>
+        </thead>
+    </table>
+
+
+    <span>Add a Publisher: </span>
+    <form action="{{ url_for('publisher') }}" method="post">
+        Name: <input type="text" name="name" /><br>
+        Address: <input type="text" name="address" /><br>
+        Phone: <input type="text" name="phone" /><br>
+        Email: <input type="text" name="email" /><br>
+        Banking Account: <input type="text" name="banking_account" /><br>
+        <input type="submit">
+    </form>
+
+    <h3><a href="{{ url_for('report') }}">View Sales Report</a></h3>
+
+
+    <script>
+        // section to log into element instead console
+        var actuallog = console.log
+
+        console.log = (...args) => {
+            //args.map(arg => document.querySelector("#mylog").innerHTML += arg + '<br>')
+        }
+        //document.getElementById('embed').innerHTML = "{{embed}}"
+        var e = "{{embed}}";
+
+        fetch('/books')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                appendData(data);
+            })
+
+        function appendData(data) {
+            var table = document.getElementById("embed");
+            for (const basket of data) {
+                var row = table.insertRow();
+                for (const ele of basket) {
+                    var cell = row.insertCell();
+                    cell.innerHTML = ele;
+                }
+            }
+        }
+
+        fetch('/author')
+            .then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                var table = document.getElementById("authors");
+                for (const basket of data) {
+                    var row = table.insertRow();
+                    for (const ele of basket) {
+                        var cell = row.insertCell();
+                        cell.innerHTML = ele;
+                    }
+                }
+            });
+
+        fetch('/publisher')
+            .then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                var table = document.getElementById("publishers");
+                for (const basket of data) {
+                    var row = table.insertRow();
+                    for (const ele of basket) {
+                        var cell = row.insertCell();
+                        cell.innerHTML = ele;
+                    }
+                }
+            });
+    </script>
+</body>
